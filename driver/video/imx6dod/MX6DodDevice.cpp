@@ -117,13 +117,14 @@ NTSTATUS MX6DOD_DEVICE::DdiSetPowerComponentFState (
         ComponentIndex,
         FState);
 
+
     switch (ComponentIndex) {
     case MX6_PWRCOMPONENT_DISPLAY_IPU:
         if (FState == 0) {
             thisPtr->IpuOn();
-            thisPtr->HdmiPhyOn();
+            // KaRo thisPtr->HdmiPhyOn();
         } else {
-            thisPtr->HdmiPhyOff();
+            // KaRo thisPtr->HdmiPhyOff();
             thisPtr->IpuOff();
         }
         break;

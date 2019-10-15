@@ -1357,7 +1357,9 @@ SdhcSlotGetCardDetectState(
 
     volatile USDHC_REGISTERS* registersPtr = sdhcExtPtr->RegistersPtr;
     USDHC_PRES_STATE_REG presState = { SdhcReadRegister(&registersPtr->PRES_STATE) };
-    BOOLEAN isCardInserted = (presState.CINST ? TRUE : FALSE);
+//Ka-Ro:        BOOLEAN isCardInserted = (presState.CINST ? TRUE : FALSE);
+	DbgPrintEx(DPFLTR_IHVBUS_ID, DPFLTR_INFO_LEVEL,"Ka-Ro: 0x%08x: forced isCardInserted to true !!!\n", sdhcExtPtr->PhysicalAddress);
+    BOOLEAN isCardInserted = TRUE;
 
     USDHC_DDI_EXIT(sdhcExtPtr->IfrLogHandle, sdhcExtPtr, "%!bool!", isCardInserted);
     return isCardInserted;
@@ -1479,6 +1481,9 @@ SdhcSlotInitialize(
     sdhcExtPtr->DebugRegistersPtr = static_cast<USDHC_REGISTERS_DEBUG*>(VirtualBasePtr);
     sdhcExtPtr->PhysicalAddress = reinterpret_cast<VOID*>(PhysicalBase.LowPart);
     NT_ASSERT(PhysicalBase.HighPart == 0);
+
+	DbgPrintEx(DPFLTR_IHVBUS_ID, DPFLTR_INFO_LEVEL, "Ka-Ro: [%s]: +++ physical address = 0x%08x\n", __FUNCTION__, sdhcExtPtr->PhysicalAddress);
+
 
     //
     // Check whether the driver is in crashdump mode.
@@ -2054,12 +2059,15 @@ SdhcSetBusWidth(
     switch (Width) {
     case SdBusWidth1Bit:
         protCtrl.DTW = USDHC_PROT_CTRL_DTW_1BIT;
+		DbgPrintEx(DPFLTR_IHVBUS_ID, DPFLTR_INFO_LEVEL, "Ka-Ro: [%s]: 0x%08x sdport requested 1Bit\n", __FUNCTION__, SdhcExtPtr->PhysicalAddress);
         break;
     case SdBusWidth4Bit:
         protCtrl.DTW = USDHC_PROT_CTRL_DTW_4BIT;
+		DbgPrintEx(DPFLTR_IHVBUS_ID, DPFLTR_INFO_LEVEL, "Ka-Ro: [%s]: 0x%08x sdport requested 4Bit\n", __FUNCTION__, SdhcExtPtr->PhysicalAddress);
         break;
     case SdBusWidth8Bit:
         protCtrl.DTW = USDHC_PROT_CTRL_DTW_8BIT;
+		DbgPrintEx(DPFLTR_IHVBUS_ID, DPFLTR_INFO_LEVEL, "Ka-Ro: [%s]: 0x%08x sdport requested 8Bit but set to 4Bit\n", __FUNCTION__, SdhcExtPtr->PhysicalAddress);
         break;
     default:
         NT_ASSERTMSG("Provided bus width is invalid", FALSE);

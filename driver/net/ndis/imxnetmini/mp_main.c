@@ -320,8 +320,8 @@ NDIS_STATUS MpInitializeEx(NDIS_HANDLE MiniportAdapterHandle, NDIS_HANDLE Minipo
         MP_MDIO_ENET_PHY_CFG EnetPhyConfig;
         EnetPhyConfig.MDIOCfg_RegsPhyAddress               = ENETRegBase;  // Suppose same address for both ENET device and MDIO device.
         EnetPhyConfig.MDIOCfg_EnetPhyAddress               = 0;            // Suppose zero address (For backward compatibility).
-        EnetPhyConfig.MDIOCfg_PhyInterfaceType             = RGMII;        // ENET PHY device interface (MII/RMII/RGMII)
-        EnetPhyConfig.MDIOCfg_MDIOControllerInputClk_kHz   = 66000;        // TODO - read from ACPI?
+        EnetPhyConfig.MDIOCfg_PhyInterfaceType             = RGMII;        // ENET PHY device interface (MII/RMII/RGMII) maybe overwritten by ACPI
+        EnetPhyConfig.MDIOCfg_MDIOControllerInputClk_kHz   = 66000;        // maybe overwritten by ACPI
         EnetPhyConfig.MDIOCfg_MDCFreq_kHz                  = 2500;         // TODO - read from PhyInfo? (802.3 max. value)
         EnetPhyConfig.MDIOCfg_STAHoldTime_ns               = 10;           // TODO - read from PhyInfo? (802.3 min. value)
         EnetPhyConfig.MDIOCfg_DisableFramePreamble         = FALSE;
@@ -333,6 +333,7 @@ NDIS_STATUS MpInitializeEx(NDIS_HANDLE MiniportAdapterHandle, NDIS_HANDLE Minipo
         if (!NT_SUCCESS(Acpi_GetValue(pAdapter, IMX_ENET_DSM_FUNCTION_GET_MDIO_BUS_ENET_PHY_ADDRESS_INDEX, &EnetPhyConfig.MDIOCfg_EnetPhyAddress, sizeof(EnetPhyConfig.MDIOCfg_EnetPhyAddress)))) {
             DBG_ENET_DEV_PRINT_INFO("MDIO bus ENET PHY address was not found in ACPI. Address 0 will be used as default.");
         } else {
+			//EnetPhyConfig.MDIOCfg_EnetPhyAddress = 1;
             DBG_ENET_DEV_PRINT_INFO("MDIO bus ENET PHY Address: %d", EnetPhyConfig.MDIOCfg_EnetPhyAddress);
         }
         if (!NT_SUCCESS(Acpi_GetValue(pAdapter, IMX_ENET_DSM_FUNCTION_GET_ENET_PHY_INTERFACE_TYPE_INDEX, &EnetPhyConfig.MDIOCfg_PhyInterfaceType, sizeof(EnetPhyConfig.MDIOCfg_PhyInterfaceType)))) {
@@ -340,8 +341,19 @@ NDIS_STATUS MpInitializeEx(NDIS_HANDLE MiniportAdapterHandle, NDIS_HANDLE Minipo
         } else {
             DBG_ENET_DEV_PRINT_INFO("ENET PHY interface type: %s", Dbg_GetEnetPhyInterfaceTypeName(EnetPhyConfig.MDIOCfg_PhyInterfaceType));
         }
+
+        if (!NT_SUCCESS(Acpi_GetValue(pAdapter, IMX_ENET_DSM_FUNCTION_GET_ENET_MDIO_BASE_CLK_KHZ_INDEX, &EnetPhyConfig.MDIOCfg_MDIOControllerInputClk_kHz, sizeof(EnetPhyConfig.MDIOCfg_MDIOControllerInputClk_kHz)))) {
+            DBG_ENET_DEV_PRINT_INFO("MDIO controller input clock was not found in ACPI. 66000 kHz will be used as default.");
+        } else {
+            DBG_ENET_DEV_PRINT_INFO("MDIO controller input clock: %u kHz", EnetPhyConfig.MDIOCfg_MDIOControllerInputClk_kHz);
+        }
+
+
+
+
         pAdapter->ENETDev_MDIODevice.MDIODev_pEnetAdapter = pAdapter;
         if ((Status = MDIODev_InitDevice(pMDIODriver, &EnetPhyConfig, &pAdapter->ENETDev_MDIODevice)) != NDIS_STATUS_SUCCESS) {
+			DBG_ENET_DEV_PRINT_ERROR_WITH_STATUS("error, function MDIODev_InitDevice failed.");
             pAdapter->NdisInterruptHandle = NULL;  // SDV bug fix
             break;
         }
@@ -351,7 +363,8 @@ NDIS_STATUS MpInitializeEx(NDIS_HANDLE MiniportAdapterHandle, NDIS_HANDLE Minipo
         pAdapter->ENETDev_PHYDevice.PHYDev_LinkSpeed = 0;
         pAdapter->ENETDev_PHYDevice.PHYDev_LPApause = PHY_LPA_INIT;
         if ((Status = PHYDev_GetPhyId(&pAdapter->ENETDev_PHYDevice)) != NDIS_STATUS_SUCCESS) {
-            pAdapter->NdisInterruptHandle = NULL;  // SDV bug fix
+ 		   DBG_ENET_DEV_PRINT_ERROR_WITH_STATUS("error, function PHYDev_GetPhyId failed.");
+           pAdapter->NdisInterruptHandle = NULL;  // SDV bug fix
             break;
         }
         // Allocate all other memory blocks including shared memory
@@ -373,6 +386,7 @@ NDIS_STATUS MpInitializeEx(NDIS_HANDLE MiniportAdapterHandle, NDIS_HANDLE Minipo
         }
 
         if (!PHYDev_ConfigurePhy(pAdapter)) {
+			DBG_ENET_DEV_PRINT_ERROR_WITH_STATUS("error, function PHYDev_ConfigurePhy failed.");
             Status = NDIS_STATUS_DEVICE_FAILED;
             break;
         }

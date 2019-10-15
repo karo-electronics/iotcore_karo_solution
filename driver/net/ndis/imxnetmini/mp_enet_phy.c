@@ -365,6 +365,40 @@ MP_PHY_INFO KSZ8091Info = {
     NULL
 };
 
+
+// SMSC LAN8700 PHY
+ENET_PHY_CMD LAN8700Config[] = {
+    {MII_WRITE_COMMAND(0x00, 0x3140), NULL},
+    {MII_WRITE_COMMAND(0x00, 0x3340), NULL},
+    {ENET_MII_END,                    NULL}
+};
+
+ENET_PHY_CMD LAN8700Startup[] = {
+    {MII_WRITE_COMMAND(MII_REG_CR, 0x1200), EnetParse_MII_C},       /* Enable and Restart Auto-Negotiation */
+    {MII_READ_COMMAND(MII_REG_ANAR),        EnetParse_MII_ANA},
+    {ENET_MII_END,                          NULL}
+};
+
+ENET_PHY_CMD LAN8700Actint[] = {
+    {MII_READ_COMMAND(MII_REG_SR),            EnetParse_MII_S},
+    {MII_READ_COMMAND(MII_REG_ANLPAR),        EnetParse_MII_LPA},
+    {ENET_MII_END,                            NULL}
+};
+
+MP_PHY_INFO LAN8700Info = {
+    ENET_PHY_LAN8700,
+    TEXT("LAN8700"),
+    LAN8700Config,
+    LAN8700Startup,
+    LAN8700Actint,
+    NULL
+};
+
+
+
+
+
+
 // KSZ9021 PHY
 ENET_PHY_CMD KSZ9021Config[] = {
     { MII_WRITE_COMMAND(0x00, 0x3140), NULL },
@@ -516,6 +550,7 @@ MP_PHY_INFO *PhyInfo[] = {
     &KSZ8091Info,
     &KSZ9021Info,
     &KSZ9031Info,
+	&LAN8700Info,
     NULL
 };
 
@@ -1122,6 +1157,7 @@ void MDIODev_SavePHYID1(UINT MIIReg, NDIS_HANDLE MiniportAdapterHandle)
 
     DBG_PHY_DEV_METHOD_BEG_WITH_PARAMS("MII_PHY_ID (Offset 0x%02X) Reg Value 0x%04X", MII_REG_PHYIR1, (UINT16)MIIReg);
     pPHYDev->PHYDev_PhyId = (MIIReg & MMI_DATA_MASK) << 16;
+	DBG_PHY_DEV_METHOD_BEG_WITH_PARAMS("KaRo: PHYId1 = %08x", pPHYDev->PHYDev_PhyId);
     DBG_PHY_DEV_METHOD_END();
 }
 _Use_decl_annotations_
@@ -1132,6 +1168,7 @@ void MDIODev_SavePHYID2(UINT MIIReg, NDIS_HANDLE MiniportAdapterHandle)
 
     DBG_PHY_DEV_METHOD_BEG_WITH_PARAMS("MII_PHY_ID2 (Offset 0x%02X) Reg Value 0x%04X", MII_REG_PHYIR2, (UINT16)MIIReg);
     pPHYDev->PHYDev_PhyId |= (MIIReg & MMI_DATA_MASK);
+	DBG_PHY_DEV_METHOD_BEG_WITH_PARAMS("KaRo: PHYId2 = %08x", pPHYDev->PHYDev_PhyId);
     KeSetEvent(&pMDIODev->MDIODev_CmdDoneEvent, 0, FALSE);
     DBG_PHY_DEV_METHOD_END();
 }
@@ -1165,7 +1202,10 @@ NTSTATUS PHYDev_GetPhyId(MP_PHY_DEVICE *pPHYDev) {
         if (pPHYDev->PHYDev_PhyId == 0xFFFFFFFF) {
             DBG_MDIO_DEV_CMD_PRINT_ERROR_WITH_STATUS("Invalid Phy ID, probably bad PHY address provided.");
             break;
-        }
+        } else {
+			DBG_MDIO_DEV_CMD_PRINT_TRACE("read PhyId 0x%x", pPHYDev->PHYDev_PhyId);
+		}
+		
         #endif
         for (i = 0; PhyInfo[i] != NULL; i++) {
             if (PhyInfo[i]->PhyId == pPHYDev->PHYDev_PhyId) {
@@ -1174,7 +1214,7 @@ NTSTATUS PHYDev_GetPhyId(MP_PHY_DEVICE *pPHYDev) {
                 break;
             }
         }
-        DBG_MDIO_DEV_CMD_PRINT_INFO("External PHY is %s", (NULL != PhyInfo[i]) ? PhyInfo[i]->PhyName : "not supported");
+        DBG_MDIO_DEV_CMD_PRINT_TRACE("External PHY is %s", (NULL != PhyInfo[i]) ? PhyInfo[i]->PhyName : "not supported");
     } while (0);
     DBG_PHY_DEV_METHOD_END_WITH_STATUS(Status);
     return(Status);

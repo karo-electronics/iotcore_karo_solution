@@ -447,8 +447,9 @@ NTSTATUS MDIODev_InitDevice(MP_MDIO_DRIVER *pMDIODrv, MP_MDIO_ENET_PHY_CFG *pEne
             DBG_MDIO_DEV_PRINT_ERROR_WITH_STATUS_AND_PARAMS("MDIO hold time is out of range.", "Computed MDIO hold time %d ns is lower then required hold time %d ns.", MDIODev_STAHoldTime_ns, pEnetPhyConfig->MDIOCfg_STAHoldTime_ns);
             break;
         }
+		
         pMDIODev->MDIODev_MSCR.U = BIT_FIELD_VAL(ENET_MSCR_MII_SPEED, MII_Div) | BIT_FIELD_VAL(ENET_MSCR_HOLDTIME, MII_Hold) | BIT_FIELD_VAL(ENET_MSCR_DIS_PRE, pEnetPhyConfig->MDIOCfg_DisableFramePreamble? 1:0);
-        DBG_MDIO_DEV_PRINT_INFO("MDIO clock frequency: %d kHz {%d kHz / ((%d + 1) * 2)}, Hold Time: %d ns {%d * %d ns }, Preamble %s.", MDIODev_Frequency_kHz, pEnetPhyConfig->MDIOCfg_MDIOControllerInputClk_kHz, MII_Div, MDIODev_STAHoldTime_ns, MII_Hold, tmpTime, pEnetPhyConfig->MDIOCfg_DisableFramePreamble? "Enabled":"Disabled");
+        DBG_MDIO_DEV_PRINT_INFO("MDIO clock frequency: %d kHz {%d kHz / ((%d + 1) * 2)}, Hold Time: %d ns {%d * %d ns }, Preamble %s.", MDIODev_Frequency_kHz, pEnetPhyConfig->MDIOCfg_MDIOControllerInputClk_kHz, MII_Div, MDIODev_STAHoldTime_ns, MII_Hold, tmpTime, pEnetPhyConfig->MDIOCfg_DisableFramePreamble? "Disabled":"Enabled");
         DBG_CODE(pMDIODev->MDIODev_Frequency_kHz = MDIODev_Frequency_kHz);
         DBG_CODE(pMDIODev->MDIODev_STAHoldTime_ns = MDIODev_STAHoldTime_ns);
         DBG_CODE(pMDIODev->MDIODev_DisableFramePreamble = pEnetPhyConfig->MDIOCfg_DisableFramePreamble);

@@ -1085,7 +1085,11 @@ NTSTATUS IMX_GPIO::ConnectIoPins (
 
         // always set to GPIO function for manual PIN I/O.
         if (NT_SUCCESS(status)) {
-            status = thisPtr->setPinFunction(absolutePinNumber, pullMode, IMX_GPIO_FUNCTION_ALT5);
+// KaRo: ALT5 is not selecting GPIO when using pin 0-15 for imx8m mini
+			IMX_PIN_DATA pinData = sparsePinMap[absolutePinNumber];
+			IMX_GPIO_FUNCTION function = (IMX_GPIO_FUNCTION)pinData.PadMuxDefault;
+// KaRO:    status = thisPtr->setPinFunction(absolutePinNumber, pullMode, IMX_GPIO_FUNCTION_ALT5);
+            status = thisPtr->setPinFunction(absolutePinNumber, pullMode, function);
         }
 
         if (NT_SUCCESS(status)) {
