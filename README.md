@@ -1,6 +1,17 @@
 Windows 10 IoT Core for NXP i.MX Processors
 ==============
-[![Build Status](https://dev.azure.com/microsoft/IOT/_apis/build/status/NXP/Firmware%20CI?branchName=public_preview)](https://dev.azure.com/microsoft/IOT/_build/latest?definitionId=38649&branchName=public_preview)
+| Component | Build Status |
+|-----|-----|
+| U-Boot Firmware | [![Build Status](https://microsoft.visualstudio.com/IOT/_apis/build/status/NXP/NXP-U-Boot%20Firmware%20CI?branchName=u-boot-imx)](https://microsoft.visualstudio.com/IOT/_build/latest?definitionId=39257&branchName=u-boot-imx)|
+| OP-TEE Firmware | [![Build Status](https://microsoft.visualstudio.com/IOT/_apis/build/status/NXP/NXP-OP-TEE%20Firmware%20CI?branchName=ms-iot)](https://microsoft.visualstudio.com/IOT/_build/latest?definitionId=39229&branchName=ms-iot)|
+| Security TAs | [![Build Status](https://dev.azure.com/msresearch/MSRSec/_apis/build/status/MSRSec-CI?branchName=master)](https://dev.azure.com/msresearch/MSRSec/_build/latest?definitionId=1447&branchName=master) |
+| Security TA Test | [![Build Status](https://microsoft.visualstudio.com/IOT/_apis/build/status/NXP/NXP-Security%20TA%20QEMU%20Testing?branchName=master)](https://microsoft.visualstudio.com/IOT/_build/latest?definitionId=42972&branchName=master)|
+| EDK2 Firmware | [![Build Status](https://microsoft.visualstudio.com/IOT/_apis/build/status/NXP/NXP-EDK2%20Firmware%20CI?branchName=imx)](https://microsoft.visualstudio.com/IOT/_build/latest?definitionId=38657&branchName=imx)|
+| MU Firmware | [![Build Status](https://dev.azure.com/microsoft/IOT/_apis/build/status/NXP/NXP-MU%20CI?branchName=master)](https://dev.azure.com/microsoft/IOT/_build/latest?definitionId=42775&branchName=master) |
+| All Firmware | [![Build Status](https://dev.azure.com/microsoft/IOT/_apis/build/status/NXP/Firmware%20CI?branchName=public_preview)](https://dev.azure.com/microsoft/IOT/_build/latest?definitionId=38649&branchName=public_preview)|
+| Latest Firmware FFU | [![Build Status](https://microsoft.visualstudio.com/IOT/_apis/build/status/NXP/NXP-Latest%20Firmware%20FFU?branchName=public_preview)](https://microsoft.visualstudio.com/IOT/_build/latest?definitionId=43820&branchName=public_preview) |
+| Stable FFU | [![Build Status](https://microsoft.visualstudio.com/IOT/_apis/build/status/NXP/NXP-BuildFFU?branchName=public_preview)](https://microsoft.visualstudio.com/IOT/_build/latest?definitionId=41026&branchName=public_preview) |
+
 
 **Important! Please read this section first.**
 
@@ -20,6 +31,8 @@ Windows 10 IoT Core for NXP i.MX Processors
 |i.MX 6DualLite | SolidRun | HummingBoard Edge | HummingBoardEdge_iMX6DL_1GB |
 |i.MX 6Solo | SolidRun | HummingBoard Edge | HummingBoardEdge_iMX6S_512MB |
 |i.MX 6SoloX | UDOO | Neo Full | UdooNeo_iMX6SX_1GB |
+|i.MX 6SoloX | NXP | i.MX SX Sabre | Sabre_iMX6SX_1GB |
+|i.MX 6ULL | NXP | i.MX 6ULL EVK | EVK_iMX6ULL_512MB |
 |i.MX 7Dual | CompuLab | IoT Gateway, CL-SOM-iMX7+SBC-iMX7 | ClSomImx7_iMX7D_1GB |
 |i.MX 7Dual | NXP | i.MX 7Dual SABRE | Sabre_iMX7D_1GB |
 |i.MX 8M | NXP | i.MX 8M EVK | NXPEVK_IMX8M_4GB |
@@ -37,7 +50,7 @@ The following tools are required to build the driver packages and IoT Core FFU: 
 
 #### Visual Studio 2017
 * Make sure that you **install Visual Studio 2017 before the WDK** so that the WDK can install a required plugin.
-* Download from https://www.visualstudio.com.
+* Download [Visual Studio 2017](https://docs.microsoft.com/en-us/windows-hardware/drivers/other-wdk-downloads#step-1-install-visual-studio).
 * During install select **Desktop development with C++**.
 * During install select the following in the Individual components tab. If these options are not available try updating VS2017 to the latest release:
   * **VC++ 2017 version 15.9 v14.16 Libs for Spectre (ARM)**
@@ -48,10 +61,10 @@ The following tools are required to build the driver packages and IoT Core FFU: 
 
 #### Windows Kits from Windows 10, version 1809
 * **IMPORTANT: Make sure that any previous versions of the ADK and WDK have been uninstalled!**
-* Install [ADK 1809](https://developer.microsoft.com/en-us/windows/hardware/windows-assessment-deployment-kit)
-* Install [WDK 1809](https://developer.microsoft.com/en-us/windows/hardware/windows-driver-kit)
+* Install [ADK version 1809](https://docs.microsoft.com/en-us/windows-hardware/get-started/adk-install#other-adk-downloads)
+* Install [WDK version 1809](https://docs.microsoft.com/en-us/windows-hardware/drivers/other-wdk-downloads#step-2-install-the-wdk)
   * Make sure that you allow the Visual Studio Extension to install after the WDK install completes.
-* If the WDK installer says it could not find the correct SDK version, install [SDK 1809](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
+* If the WDK installer says it could not find the correct SDK version, install [SDK version 1809](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive)
 
 #### IoT Core OS Packages
 * Visit the [Windows IoT Core Downloads](https://www.microsoft.com/en-us/software-download/windows10IoTCore#!) page and download "Windows 10 IoT Core Packages – Windows 10 IoT Core, version 1809 (LTSC)".
@@ -125,10 +138,13 @@ Building custom firmware into an FFU requires additional steps:
 * [Building and Updating Firmware for ARM](Documentation/build-firmware.md)
 * [Building and Updating Firmware for ARM64](Documentation/build-arm64-firmware.md)
 * [Firmware Boot Documentation](Documentation/boot.md)
+* [Firmware Signing Documentation for ARM](Documentation/signing-firmware.md)
 * [Testing your BSP](Documentation/tests.md)
 * [Creating Windows PE images and booting from eMMC](Documentation/winpe-mmc.md)
 
 The firmware code can be found in the following repos:
+
+![Repository Dependency Graph](Documentation/repository_graph.png)
 
 * U-Boot: https://github.com/ms-iot/u-boot.git
 * OP-TEE: https://github.com/ms-iot/optee_os.git

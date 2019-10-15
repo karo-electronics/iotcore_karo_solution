@@ -4,16 +4,27 @@ IoT Core Test Methods
 This document walks through various tools available for testing the functionality and stability of new drivers for Windows IoT Core.
 
 # Hardware Lab Kit
-The Windows Hardware Lab kit (Windows HLK) is a test framework used to test hardware devices for Windows 10. A subset of the tests is available for use on Windows IoT Core devices.
+The Windows Hardware Lab Kit (Windows HLK) is a test framework used to test hardware devices for Windows 10. A subset of the tests is available for use on Windows IoT Core devices.
 ## Prerequisites
- - A machine dedicated solely for HLK testing purposes running Windows Server 2008 R2, Windows Server 2012, Windows Server 2012 R2, or Windows Server 2016.
+ - A machine dedicated solely for HLK testing purposes running Windows Server 2008 R2, Windows Server 2012, Windows Server 2012 R2, or Windows Server 2016. This can also be a dedicated virtual machine.
  - Network connectivity with the device under test.
 
 ## HLK Setup
 
-**1. Set up the HLK server**:
- https://docs.microsoft.com/en-us/windows-hardware/test/hlk/getstarted/step-1-install-controller-and-studio-on-the-test-server 
+**1. (Option A) Download the preconfigured VHLK image and run in Hyper-V**
 
+  This is the preferred method because it's easier to setup. Use the RS5 VHD and follow the instructions in the below links:
+  
+  https://www.microsoft.com/en-us/evalcenter/evaluate-virtual-hardware-lab-kit
+  
+  https://docs.microsoft.com/en-us/windows-hardware/test/hlk/getstarted/getstarted-vhlk
+
+**1. (Option B) Set up the HLK on your own Windows Server install**:
+
+  If you need to use your own Windows Server 2016 machine you can follow this setup. Make sure to use Version 1809 of the HLK:
+  
+  https://docs.microsoft.com/en-us/windows-hardware/test/hlk/getstarted/step-1-install-controller-and-studio-on-the-test-server 
+ 
 **2. Machine Pool Setup**
 
    + Open HLK Studio on the HLK server.

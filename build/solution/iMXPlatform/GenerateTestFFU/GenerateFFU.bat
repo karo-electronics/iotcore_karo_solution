@@ -26,6 +26,10 @@ if "%PLATFORM%"=="ARM" (
     REM call BuildImage Sabre_iMX6QP_1GB Sabre_iMX6QP_1GB_TestOEMInput.xml
 
     REM cd /d %BATCH_HOME%
+    REM echo "Building Sabre_iMX6SX_1GB FFU"
+    REM call BuildImage Sabre_iMX6SX_1GB Sabre_iMX6SX_1GB_TestOEMInput.xml
+
+    REM cd /d %BATCH_HOME%
     REM echo "Building HummingBoardEdge_iMX6S_512MB FFU"
     REM call BuildImage HummingBoardEdge_iMX6S_512MB HummingBoardEdge_iMX6S_512MB_TestOEMInput.xml
 
@@ -40,6 +44,10 @@ if "%PLATFORM%"=="ARM" (
     REM cd /d %BATCH_HOME%
     REM echo "Building VAB820_iMX6Q_1GB FFU"
     REM call BuildImage VAB820_iMX6Q_1GB VAB820_iMX6Q_1GB_TestOEMInput.xml
+
+    REM cd /d %BATCH_HOME%
+    REM echo "Building EVK_iMX6ULL_512MB FFU"
+    REM call BuildImage EVK_iMX6ULL_512MB EVK_iMX6ULL_512MB_TestOEMInput.xml
 
     REM i.MX7 Platforms
 
