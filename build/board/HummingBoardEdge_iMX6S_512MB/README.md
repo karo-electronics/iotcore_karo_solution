@@ -1,3 +1,0 @@
-HummingBoard-Solo
-board
-package
